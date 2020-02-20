@@ -21,6 +21,14 @@ from cStringIO import StringIO
 import tarfile
 import json
 
+import sys, os
+
+LOG_FILE = '/tmp/iterm2_recvfile.log'
+
+def logReceieved(R):
+    with open(LOG_FILE,'a') as f:
+        f.write('RECEIVED: {}'.format(R))
+
 ################################################################################
 ##
 ##  Main
@@ -146,6 +154,7 @@ class Main(object):
         savedir = os.path.join(os.path.expanduser("~/Downloads"), '%s.%s'%(host, time.strftime('%Y%m%d.%H%M%S')))
         os.mkdir(savedir)
         tar.extractall(path=savedir)
+        logReceieved(savedir)
 
         return(0)
 
