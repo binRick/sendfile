@@ -1,13 +1,5 @@
 #! /usr/bin/env python
-################################################################################
-##
-##  recvfile.py
-##
-##  Copyright (C) by Steve King <steve@narbat.com> 2016
-##  This code my be freely used or modified for any purpose.
-##
-################################################################################
-import logging
+import logging, traceback
 import logging.handlers
 import optparse
 import os
@@ -25,9 +17,11 @@ import sys, os
 
 LOG_FILE = '/tmp/iterm2_recvfile.log'
 
-def logReceieved(R):
+def logReceived(R):
     with open(LOG_FILE,'a') as f:
-        f.write('RECEIVED: {}'.format(R))
+        f.write(' [logReceived]: {}"\n'.format(R))
+        f.flush()        
+
 
 ################################################################################
 ##
@@ -41,6 +35,7 @@ class Main(object):
     ##  _log_setup
     ############################################################################
     def _log_setup(self, loglevel=logging.INFO, stdout=True, stderr=False, syslog=False, logfile=None):
+        logReceived('INIT')
         class MainFormatter(logging.Formatter):
             _default = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             _debug   = logging.Formatter(fmt='%(asctime)s %(levelname)s (%(module)s:%(lineno)d) %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -64,6 +59,7 @@ class Main(object):
 
         global log
         log = logging.getLogger()
+
         fmt = MainFormatter()
 
         if stdout:  fmt.add(log, logging.StreamHandler(sys.stdout))
@@ -82,7 +78,7 @@ class Main(object):
         usage = '%prog [options]'
         descr = ''.strip()
         defaults = {
-            'verbose' : False,
+            'verbose' : True,
         }
 
         parser = optparse.OptionParser(usage=usage, description=descr, version=Main.VERSION)
@@ -141,7 +137,21 @@ class Main(object):
         while not re.search(r'[^A-Za-z0-9/+=]', line):
             data += base64.b64decode(line)
             line = self.readline()
+
+#        logReceived('received {} byte line'.format(len(line)))
+#        logReceived(line)
+
+#        return(0)
+
         tar = tarfile.open(fileobj=StringIO(data))
+#        try:                
+#            tar = tarfile.open(fileobj=StringIO(data))
+#        except Exception as e:
+#            logReceived(e.message)
+#            logReceived(traceback.format_exc())
+#            tar = None
+            #return(1)                
+            
         log.info('%r', tar.getnames())
 
         # Extract to ~/Downloads
@@ -154,7 +164,7 @@ class Main(object):
         savedir = os.path.join(os.path.expanduser("~/Downloads"), '%s.%s'%(host, time.strftime('%Y%m%d.%H%M%S')))
         os.mkdir(savedir)
         tar.extractall(path=savedir)
-        logReceieved(savedir)
+        logReceived(savedir)
 
         return(0)
 
