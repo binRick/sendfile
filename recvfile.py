@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#/usr/bin/env python
+#/usr/local/bin/python3.7
 import logging, traceback
 import logging.handlers
 import optparse
