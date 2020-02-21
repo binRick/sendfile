@@ -2,6 +2,7 @@
 set -e
 cd $( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
+[[ -d submodules/iterm-notify ]] || git clone https://github.com/marzocchi/iterm-notify submodules/iterm-notify
 [[ -f submodules/iterm-notify/notify.py ]] || echo Missing iterm-notify
 [[ -d ~/Library/ApplicationSupport/iTerm2/Scripts/AutoLaunch ]] || mkdir -p ~/Library/ApplicationSupport/iTerm2/Scripts/AutoLaunch
 [[ -f ~/Library/ApplicationSupport/iTerm2/Scripts/AutoLaunch/iterm-notify.py ]] || cp submodules/iterm-notify/notify.py ~/Library/ApplicationSupport/iTerm2/Scripts/AutoLaunch/iterm-notify.py
