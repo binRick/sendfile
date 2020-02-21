@@ -13,7 +13,6 @@ import base64
 from cStringIO import StringIO
 import tarfile
 import json
-
 import sys, os
 
 LOG_FILE = '/tmp/iterm2_recvfile.log'
@@ -21,7 +20,6 @@ LOG_FILE = '/tmp/iterm2_recvfile.log'
 def logReceived(R):
     with open(LOG_FILE,'a') as f:
         f.write(' [logReceived]: {}"\n'.format(R))
-        f.flush()        
 
 
 ################################################################################
@@ -36,7 +34,7 @@ class Main(object):
     ##  _log_setup
     ############################################################################
     def _log_setup(self, loglevel=logging.INFO, stdout=True, stderr=False, syslog=False, logfile=None):
-        logReceived('INIT')
+        logReceived(' [INIT]')
         class MainFormatter(logging.Formatter):
             _default = logging.Formatter(fmt='%(asctime)s %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
             _debug   = logging.Formatter(fmt='%(asctime)s %(levelname)s (%(module)s:%(lineno)d) %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
@@ -104,7 +102,9 @@ class Main(object):
     ##  readline
     ############################################################################
     def readline(self):
+        logReceived(' [readline]')
         data = sys.stdin.readline().strip()
+        logReceived('                {}'.format(data))
         self.lineno += 1
         log.debug('%5d: %r', self.lineno, data)
         return data
@@ -139,10 +139,7 @@ class Main(object):
             data += base64.b64decode(line)
             line = self.readline()
 
-#        logReceived('received {} byte line'.format(len(line)))
-#        logReceived(line)
-
-#        return(0)
+        logReceived('\n\nreceived {} byte line\n       {}\n\n'.format(len(line), line))
 
         tar = tarfile.open(fileobj=StringIO(data))
 #        try:                
